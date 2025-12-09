@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Remove EIFGENs from git tracking
+- Post-session update 2025-12-08 20:45
 - Post-session update 2025-12-08 20:16
 - Add Phase 2 & 3 enhancements: streaming, advanced options, fluent builders, interceptors, cookies
 - first commit
