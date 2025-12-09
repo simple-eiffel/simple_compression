@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPLE_COMPRESSION - Documentation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>SIMPLE_COMPRESSION</h1>
+        <p>Simple compression wrapper for ISE zlib library</p>
+    </header>
+
+    <nav>
+        <a href="#overview">Overview</a>
+        <a href="#quick-start">Quick Start</a>
+        <a href="#api">API Reference</a>
+        <a href="#streaming">Streaming</a>
+        <a href="https://github.com/simple-eiffel/simple_compression">GitHub</a>
+    </nav>
+
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>SIMPLE_COMPRESSION provides easy-to-use compression for Eiffel applications, wrapping the ISE zlib library.</p>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li>String compression/decompression</li>
+                <li>Base64-encoded compression for text storage</li>
+                <li>Byte array support</li>
+                <li>File compression</li>
+                <li>Streaming for large files</li>
+                <li>Configurable compression levels (0-9)</li>
+                <li>CRC32/Adler32 checksums</li>
+            </ul>
+        </section>
+
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+            <pre><code>&lt;library name="simple_compression" location="$SIMPLE_COMPRESSION/simple_compression.ecf"/&gt;</code></pre>
+
+            <h3>Basic Usage</h3>
+            <pre><code>local
+    comp: SIMPLE_COMPRESSION
+    compressed: STRING
+do
+    create comp.make
+
+    -- Compress a string
+    compressed := comp.compress_string ("Hello, World!")
+
+    -- Decompress
+    print (comp.decompress_string (compressed))
+
+    -- Best compression
+    comp.set_level_best
+    compressed := comp.compress_string (large_data)
+    print ("Saved " + comp.compression_percentage.out + "%%")
+end</code></pre>
+        </section>
+
+        <section id="api">
+            <h2>API Reference</h2>
+
+            <h3>Compression Levels</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>set_level (0-9)</code></td><td>Set compression level</td></tr>
+                <tr><td><code>set_level_fast</code></td><td>Level 1 - fastest</td></tr>
+                <tr><td><code>set_level_default</code></td><td>Level 6 - balanced</td></tr>
+                <tr><td><code>set_level_best</code></td><td>Level 9 - smallest</td></tr>
+            </table>
+
+            <h3>String Operations</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>compress_string (str)</code></td><td>Compress to raw bytes</td></tr>
+                <tr><td><code>decompress_string (data)</code></td><td>Decompress string</td></tr>
+                <tr><td><code>compress_string_base64 (str)</code></td><td>Compress to Base64</td></tr>
+                <tr><td><code>decompress_string_base64 (b64)</code></td><td>Decompress from Base64</td></tr>
+            </table>
+
+            <h3>File Operations</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>compress_file (src, dest)</code></td><td>Compress file</td></tr>
+                <tr><td><code>decompress_file (src, dest)</code></td><td>Decompress file</td></tr>
+                <tr><td><code>read_compressed_file (path)</code></td><td>Read and decompress</td></tr>
+                <tr><td><code>write_compressed_file (path, data)</code></td><td>Compress and write</td></tr>
+            </table>
+
+            <h3>Checksums</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>crc32 (data)</code></td><td>Calculate CRC32</td></tr>
+                <tr><td><code>adler32 (data)</code></td><td>Calculate Adler-32</td></tr>
+                <tr><td><code>validate_checksum (data, crc)</code></td><td>Verify CRC32</td></tr>
+            </table>
+
+            <h3>Statistics</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>compression_ratio</code></td><td>Input/output ratio</td></tr>
+                <tr><td><code>compression_percentage</code></td><td>Size reduction %</td></tr>
+                <tr><td><code>space_savings</code></td><td>Human-readable summary</td></tr>
+            </table>
+        </section>
+
+        <section id="streaming">
+            <h2>Streaming API</h2>
+            <p>For large files, use SIMPLE_COMPRESSION_STREAM:</p>
+            <pre><code>local
+    stream: SIMPLE_COMPRESSION_STREAM
+do
+    create stream.make_compress ("output.gz")
+    stream.write ("Chunk 1...")
+    stream.write ("Chunk 2...")
+    stream.close
+end</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024-2025 Larry Rix. MIT License.</p>
+        <p><a href="https://github.com/simple-eiffel/simple_compression">GitHub</a></p>
+    </footer>
+</body>
+</html>
