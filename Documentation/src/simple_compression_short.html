@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="generator" content="ISE EiffelStudio version 25.02.9.8732 - win64">
+<meta name="description" content="Simple compression wrapper for ISE zlib library"/>
+<meta name="author" content="Larry Rix"/>
+<meta name="keywords" content="Eiffel class"/>
+<meta name="copyright" content="Copyright (c) 2024-2025, Larry Rix"/>
+<meta name="license" content="MIT License"/>
+<meta name="keywords" content="Eiffel class"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+<title>simple_compression Contracts</title>
+<link rel="stylesheet" href="../default.css" type="text/css">
+<script type="text/javascript" src="../goto.html"></script>
+</head>
+<body>
+<pre></pre><form class="nav" onsubmit="go_to('../',this.c.value);return false;">
+<div class="nav">
+<a class="nav hierarchy" href="../class_list.html">Classes</a>
+<a class="nav hierarchy" href="../cluster_list.html">Clusters</a>
+<a class="nav hierarchy" href="../cluster_hierarchy.html">Cluster hierarchy</a>
+<a class="nav class" href="simple_compression_chart.html">Chart</a>
+<a class="nav class" href="simple_compression_links.html">Relations</a>
+<span class="nav class selected">Contracts</span>
+<span class="nav class goto">Go to: <input name="c" value="simple_compression"></span>
+</div></form><pre><span class="ekeyword">note</span>
+	<span class="eitag">description</span><span class="esymbol">:</span> <span class="estring">&quot;Simple compression wrapper for ISE zlib library&quot;</span>
+	<span class="eitag">author</span><span class="esymbol">:</span> <span class="estring">&quot;Larry Rix&quot;</span>
+	<span class="eitag">date</span><span class="esymbol">:</span> <span class="estring">&quot;$Date$&quot;</span>
+	<span class="eitag">revision</span><span class="esymbol">:</span> <span class="estring">&quot;$Revision$&quot;</span>
+
+<span class="ekeyword">class</span> <span class="ekeyword">interface</span>
+	<a class="eclass" href="../src/simple_compression_short.html">SIMPLE_COMPRESSION</a>
+
+<span class="ekeyword">create</span> 
+	<a class="efeature" href="../src/simple_compression_short.html#f_make">make</a><span class="esymbol">,</span>
+	<a class="efeature" href="../src/simple_compression_short.html#f_make_with_level">make_with_level</a>
+
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Access</span>
+
+	<a name="f_compression_level"></a><a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compression level (0=none, 1=fast, 6=default, 9=best)</span>
+
+	<a name="f_last_error"></a><a class="efeature" href="../src/simple_compression_short.html#f_last_error">last_error</a><span class="esymbol">:</span> <span class="ekeyword">detachable</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Last error message, if any</span>
+
+	<a name="f_last_input_size"></a><a class="efeature" href="../src/simple_compression_short.html#f_last_input_size">last_input_size</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Size of last input in bytes</span>
+
+	<a name="f_last_output_size"></a><a class="efeature" href="../src/simple_compression_short.html#f_last_output_size">last_output_size</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Size of last output in bytes</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Status Report</span>
+
+	<a name="f_is_valid_level"></a><a class="efeature" href="../src/simple_compression_short.html#f_is_valid_level">is_valid_level</a> <span class="esymbol">(</span><span class="elocal">a_level</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Is </span><span class="equoted">a_level</span><span class="ecomment"> a valid compression level?</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_compression_ratio"></a><a class="efeature" href="../src/simple_compression_short.html#f_compression_ratio">compression_ratio</a><span class="esymbol">:</span> <a class="eclass" href="../base/real_64_short.html">REAL_64</a>
+			<span class="ecomment">--</span><span class="ecomment"> Ratio of last compression (original_size / compressed_size).</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns 0 if no compression performed or output was empty.</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Level Settings</span>
+
+	<a name="f_set_level"></a><a class="efeature" href="../src/simple_compression_short.html#f_set_level">set_level</a> <span class="esymbol">(</span><span class="elocal">a_level</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">)</span>
+			<span class="ecomment">--</span><span class="ecomment"> Set compression level.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">valid_level</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_is_valid_level">is_valid_level</a><span class="esymbol"> </span><span class="esymbol">(</span><span class="elocal">a_level</span><span class="esymbol">)</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">level_set</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a> <span class="esymbol">=</span> <span class="elocal">a_level</span>
+
+	<a name="f_set_level_fast"></a><a class="efeature" href="../src/simple_compression_short.html#f_set_level_fast">set_level_fast</a>
+			<span class="ecomment">--</span><span class="ecomment"> Set fastest compression (level 1).</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">level_set</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a> <span class="esymbol">=</span> <a class="efeature" href="../zlib/zlib_constants_short.html#f_z_best_speed">Z_best_speed</a>
+
+	<a name="f_set_level_default"></a><a class="efeature" href="../src/simple_compression_short.html#f_set_level_default">set_level_default</a>
+			<span class="ecomment">--</span><span class="ecomment"> Set default compression (level 6).</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">level_set</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a> <span class="esymbol">=</span> <a class="efeature" href="../zlib/zlib_constants_short.html#f_z_default_compression">Z_default_compression</a>
+
+	<a name="f_set_level_best"></a><a class="efeature" href="../src/simple_compression_short.html#f_set_level_best">set_level_best</a>
+			<span class="ecomment">--</span><span class="ecomment"> Set best compression (level 9).</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">level_set</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a> <span class="esymbol">=</span> <a class="efeature" href="../zlib/zlib_constants_short.html#f_z_best_compression">Z_best_compression</a>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Level Constants (for convenience)</span>
+
+	<a name="f_level_none"></a><a class="efeature" href="../src/simple_compression_short.html#f_level_none">Level_none</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a> <span class="esymbol">=</span> <span class="enumber">0</span>
+			<span class="ecomment">--</span><span class="ecomment"> No compression</span>
+
+	<a name="f_level_fast"></a><a class="efeature" href="../src/simple_compression_short.html#f_level_fast">Level_fast</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a> <span class="esymbol">=</span> <span class="enumber">1</span>
+			<span class="ecomment">--</span><span class="ecomment"> Fastest compression</span>
+
+	<a name="f_level_default"></a><a class="efeature" href="../src/simple_compression_short.html#f_level_default">Level_default</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a> <span class="esymbol">=</span> <span class="enumber">-1</span>
+			<span class="ecomment">--</span><span class="ecomment"> Default compression (level 6 internally)</span>
+
+	<a name="f_level_best"></a><a class="efeature" href="../src/simple_compression_short.html#f_level_best">Level_best</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a> <span class="esymbol">=</span> <span class="enumber">9</span>
+			<span class="ecomment">--</span><span class="ecomment"> Best compression</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> String Compression</span>
+
+	<a name="f_compress_string"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_string">compress_string</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress </span><span class="equoted">a_input</span><span class="ecomment"> and return compressed data as raw string.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Use </span><span class="ecomment">`</span><a class="efeature" href="../src/simple_compression_short.html#f_compress_string_base64">compress_string_base64</a><span class="ecomment">`</span><span class="ecomment"> for safe text storage.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">sizes_tracked</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_last_input_size">last_input_size</a> <span class="esymbol">=</span> <span class="elocal">a_input</span><span class="edot">.</span><a class="efeature" href="../base/readable_string_8_short.html#f_count">count</a>
+
+	<a name="f_decompress_string"></a><a class="efeature" href="../src/simple_compression_short.html#f_decompress_string">decompress_string</a> <span class="esymbol">(</span><span class="elocal">a_compressed</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Decompress </span><span class="equoted">a_compressed</span><span class="ecomment"> data back to original string.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_compressed</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">input_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_compressed</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">sizes_tracked</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_last_input_size">last_input_size</a> <span class="esymbol">=</span> <span class="elocal">a_compressed</span><span class="edot">.</span><a class="efeature" href="../base/readable_string_8_short.html#f_count">count</a>
+
+	<a name="f_compress_string_base64"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_string_base64">compress_string_base64</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress </span><span class="equoted">a_input</span><span class="ecomment"> and return as Base64 encoded string.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Safe for storage in text files, JSON, databases, etc.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_decompress_string_base64"></a><a class="efeature" href="../src/simple_compression_short.html#f_decompress_string_base64">decompress_string_base64</a> <span class="esymbol">(</span><span class="elocal">a_base64</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Decompress Base64 encoded compressed data.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_base64</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">input_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_base64</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Convenience String Methods</span>
+
+	<a name="f_compress_fast"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_fast">compress_fast</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress with fastest settings (level 1).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">level_unchanged</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a> <span class="esymbol">=</span> <span class="ekeyword">old</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a>
+
+	<a name="f_compress_best"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_best">compress_best</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress with best compression (level 9).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">level_unchanged</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a> <span class="esymbol">=</span> <span class="ekeyword">old</span> <a class="efeature" href="../src/simple_compression_short.html#f_compression_level">compression_level</a>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Format Detection</span>
+
+	<a name="f_is_zlib_format"></a><a class="efeature" href="../src/simple_compression_short.html#f_is_zlib_format">is_zlib_format</a> <span class="esymbol">(</span><span class="elocal">a_data</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Does </span><span class="equoted">a_data</span><span class="ecomment"> appear to be zlib compressed?</span>
+			<span class="ecomment">--</span><span class="ecomment"> Checks for zlib magic header bytes (78 xx).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">data_not_void</span><span class="esymbol">:</span> <span class="elocal">a_data</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_is_gzip_format"></a><a class="efeature" href="../src/simple_compression_short.html#f_is_gzip_format">is_gzip_format</a> <span class="esymbol">(</span><span class="elocal">a_data</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Does </span><span class="equoted">a_data</span><span class="ecomment"> appear to be gzip compressed?</span>
+			<span class="ecomment">--</span><span class="ecomment"> Checks for gzip magic bytes (1F 8B).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">data_not_void</span><span class="esymbol">:</span> <span class="elocal">a_data</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_detect_format"></a><a class="efeature" href="../src/simple_compression_short.html#f_detect_format">detect_format</a> <span class="esymbol">(</span><span class="elocal">a_data</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Detect compression format of </span><span class="equoted">a_data</span><span class="ecomment">.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns &quot;zlib&quot;, &quot;gzip&quot;, or &quot;unknown&quot;.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">data_not_void</span><span class="esymbol">:</span> <span class="elocal">a_data</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> CRC32</span>
+
+	<a name="f_crc32"></a><a class="efeature" href="../src/simple_compression_short.html#f_crc32">crc32</a> <span class="esymbol">(</span><span class="elocal">a_data</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/natural_32_short.html">NATURAL_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Calculate CRC32 checksum of </span><span class="equoted">a_data</span><span class="ecomment">.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">data_not_void</span><span class="esymbol">:</span> <span class="elocal">a_data</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Error Messages</span>
+
+	<a name="f_error_message"></a><a class="efeature" href="../src/simple_compression_short.html#f_error_message">error_message</a> <span class="esymbol">(</span><span class="elocal">a_code</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Human-readable error message for zlib error code.</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Byte Array Compression</span>
+
+	<a name="f_compress_bytes"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_bytes">compress_bytes</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/natural_8_short.html">NATURAL_8</a><span class="esymbol">]</span><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/natural_8_short.html">NATURAL_8</a><span class="esymbol">]</span>
+			<span class="ecomment">--</span><span class="ecomment"> Compress byte array </span><span class="equoted">a_input</span><span class="ecomment">.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">input_not_empty</span><span class="esymbol">:</span> <span class="elocal">a_input</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">sizes_tracked</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_last_input_size">last_input_size</a> <span class="esymbol">=</span> <span class="elocal">a_input</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a>
+
+	<a name="f_decompress_bytes"></a><a class="efeature" href="../src/simple_compression_short.html#f_decompress_bytes">decompress_bytes</a> <span class="esymbol">(</span><span class="elocal">a_compressed</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/natural_8_short.html">NATURAL_8</a><span class="esymbol">]</span><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/natural_8_short.html">NATURAL_8</a><span class="esymbol">]</span>
+			<span class="ecomment">--</span><span class="ecomment"> Decompress byte array </span><span class="equoted">a_compressed</span><span class="ecomment">.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_compressed</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">input_not_empty</span><span class="esymbol">:</span> <span class="elocal">a_compressed</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">sizes_tracked</span><span class="esymbol">:</span> <a class="efeature" href="../src/simple_compression_short.html#f_last_input_size">last_input_size</a> <span class="esymbol">=</span> <span class="elocal">a_compressed</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> File Operations</span>
+
+	<a name="f_compress_file"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_file">compress_file</a> <span class="esymbol">(</span><span class="elocal">a_source_path</span><span class="esymbol">,</span> <span class="elocal">a_dest_path</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress file at </span><span class="equoted">a_source_path</span><span class="ecomment"> to gzip format at </span><span class="equoted">a_dest_path</span><span class="ecomment">.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns True on success, False on failure (check last_error).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">source_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_source_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+			<span class="etag">dest_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_dest_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+
+	<a name="f_decompress_file"></a><a class="efeature" href="../src/simple_compression_short.html#f_decompress_file">decompress_file</a> <span class="esymbol">(</span><span class="elocal">a_source_path</span><span class="esymbol">,</span> <span class="elocal">a_dest_path</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Decompress file at </span><span class="equoted">a_source_path</span><span class="ecomment"> to </span><span class="equoted">a_dest_path</span><span class="ecomment">.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns True on success, False on failure (check last_error).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">source_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_source_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+			<span class="etag">dest_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_dest_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+
+	<a name="f_read_compressed_file"></a><a class="efeature" href="../src/simple_compression_short.html#f_read_compressed_file">read_compressed_file</a> <span class="esymbol">(</span><span class="elocal">a_path</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Read and decompress file at </span><span class="equoted">a_path</span><span class="ecomment">, returning decompressed content.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns empty string on failure (check last_error).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">path_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_write_compressed_file"></a><a class="efeature" href="../src/simple_compression_short.html#f_write_compressed_file">write_compressed_file</a> <span class="esymbol">(</span><span class="elocal">a_path</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">;</span> <span class="elocal">a_content</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress </span><span class="equoted">a_content</span><span class="ecomment"> and write to file at </span><span class="equoted">a_path</span><span class="ecomment">.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns True on success, False on failure (check last_error).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">path_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+			<span class="etag">content_not_void</span><span class="esymbol">:</span> <span class="elocal">a_content</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Validation</span>
+
+	<a name="f_validate_checksum"></a><a class="efeature" href="../src/simple_compression_short.html#f_validate_checksum">validate_checksum</a> <span class="esymbol">(</span><span class="elocal">a_data</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">;</span> <span class="elocal">a_expected_crc</span><span class="esymbol">:</span> <a class="eclass" href="../base/natural_32_short.html">NATURAL_32</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Validate that </span><span class="equoted">a_data</span><span class="ecomment"> has the expected CRC32 checksum.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">data_not_void</span><span class="esymbol">:</span> <span class="elocal">a_data</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_adler32"></a><a class="efeature" href="../src/simple_compression_short.html#f_adler32">adler32</a> <span class="esymbol">(</span><span class="elocal">a_data</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/natural_32_short.html">NATURAL_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Calculate Adler-32 checksum of </span><span class="equoted">a_data</span><span class="ecomment">.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Used by zlib format (different from CRC32 used by gzip).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">data_not_void</span><span class="esymbol">:</span> <span class="elocal">a_data</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Statistics</span>
+
+	<a name="f_last_operation_successful"></a><a class="efeature" href="../src/simple_compression_short.html#f_last_operation_successful">last_operation_successful</a><span class="esymbol">:</span> <a class="eclass" href="../base/boolean_short.html">BOOLEAN</a>
+			<span class="ecomment">--</span><span class="ecomment"> Was the last operation successful?</span>
+
+	<a name="f_compression_percentage"></a><a class="efeature" href="../src/simple_compression_short.html#f_compression_percentage">compression_percentage</a><span class="esymbol">:</span> <a class="eclass" href="../base/real_64_short.html">REAL_64</a>
+			<span class="ecomment">--</span><span class="ecomment"> Percentage of size reduction in last compression.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns 0 if no compression performed.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Example: 75.0 means compressed to 25% of original size.</span>
+
+	<a name="f_space_savings"></a><a class="efeature" href="../src/simple_compression_short.html#f_space_savings">space_savings</a><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Human-readable description of compression savings.</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Advanced Options</span>
+
+	<a name="f_compress_with_options"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_with_options">compress_with_options</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">;</span> <span class="elocal">a_level</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">;</span> <span class="elocal">a_window_bits</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">;</span> <span class="elocal">a_strategy</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress with custom options.</span>
+			<span class="ecomment">--</span><span class="ecomment"> </span><span class="equoted">a_level</span><span class="ecomment">: 0-9 (0=none, 1=fast, 9=best)</span>
+			<span class="ecomment">--</span><span class="ecomment"> </span><span class="equoted">a_window_bits</span><span class="ecomment">: 8-15 (default 15, affects memory usage)</span>
+			<span class="ecomment">--</span><span class="ecomment"> </span><span class="equoted">a_strategy</span><span class="ecomment">: Z_DEFAULT_STRATEGY, Z_FILTERED, Z_HUFFMAN_ONLY, Z_RLE</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">valid_level</span><span class="esymbol">:</span> <span class="elocal">a_level</span> <a class="esymbol" href="../base/comparable_short.html#f_is_greater_equal">&gt;=</a> <span class="enumber">0</span> <a class="ekeyword" href="../base/boolean_short.html#f_conjuncted">and</a> <span class="elocal">a_level</span> <a class="esymbol" href="../base/comparable_short.html#f_is_less_equal">&lt;=</a> <span class="enumber">9</span>
+			<span class="etag">valid_window</span><span class="esymbol">:</span> <span class="elocal">a_window_bits</span> <a class="esymbol" href="../base/comparable_short.html#f_is_greater_equal">&gt;=</a> <span class="enumber">8</span> <a class="ekeyword" href="../base/boolean_short.html#f_conjuncted">and</a> <span class="elocal">a_window_bits</span> <a class="esymbol" href="../base/comparable_short.html#f_is_less_equal">&lt;=</a> <span class="enumber">15</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_strategy_default"></a><a class="efeature" href="../src/simple_compression_short.html#f_strategy_default">strategy_default</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Default compression strategy (best for most data).</span>
+
+	<a name="f_strategy_filtered"></a><a class="efeature" href="../src/simple_compression_short.html#f_strategy_filtered">strategy_filtered</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Optimized for data with lots of small values.</span>
+
+	<a name="f_strategy_huffman_only"></a><a class="efeature" href="../src/simple_compression_short.html#f_strategy_huffman_only">strategy_huffman_only</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> No string matching, only Huffman encoding.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Fast but poor compression.</span>
+
+	<a name="f_strategy_rle"></a><a class="efeature" href="../src/simple_compression_short.html#f_strategy_rle">strategy_rle</a><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+			<span class="ecomment">--</span><span class="ecomment"> Run-length encoding, good for images with long runs.</span>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Streaming Factory</span>
+
+	<a name="f_create_compress_stream"></a><a class="efeature" href="../src/simple_compression_short.html#f_create_compress_stream">create_compress_stream</a> <span class="esymbol">(</span><span class="elocal">a_output_path</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../src/simple_compression_stream_short.html">SIMPLE_COMPRESSION_STREAM</a>
+			<span class="ecomment">--</span><span class="ecomment"> Create a compression stream writing to </span><span class="equoted">a_output_path</span><span class="ecomment">.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">path_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_output_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">compressing</span><span class="esymbol">:</span> <span class="ekeyword">Result</span><span class="edot">.</span><a class="efeature" href="../src/simple_compression_stream_short.html#f_is_compressing">is_compressing</a>
+
+	<a name="f_create_decompress_stream"></a><a class="efeature" href="../src/simple_compression_short.html#f_create_decompress_stream">create_decompress_stream</a> <span class="esymbol">(</span><span class="elocal">a_input_path</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../src/simple_compression_stream_short.html">SIMPLE_COMPRESSION_STREAM</a>
+			<span class="ecomment">--</span><span class="ecomment"> Create a decompression stream reading from </span><span class="equoted">a_input_path</span><span class="ecomment">.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">path_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_input_path</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">decompressing</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="ekeyword">Result</span><span class="edot">.</span><a class="efeature" href="../src/simple_compression_stream_short.html#f_is_compressing">is_compressing</a>
+	
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Dictionary Compression</span>
+
+	<a name="f_compress_with_dictionary"></a><a class="efeature" href="../src/simple_compression_short.html#f_compress_with_dictionary">compress_with_dictionary</a> <span class="esymbol">(</span><span class="elocal">a_input</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">;</span> <span class="elocal">a_dictionary</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> Compress </span><span class="equoted">a_input</span><span class="ecomment"> using </span><span class="equoted">a_dictionary</span><span class="ecomment"> for better compression of similar data.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Dictionary should contain common strings/patterns from the data.</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">input_not_void</span><span class="esymbol">:</span> <span class="elocal">a_input</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">dictionary_not_void</span><span class="esymbol">:</span> <span class="elocal">a_dictionary</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">result_not_void</span><span class="esymbol">:</span> <span class="ekeyword">Result</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+
+	<a name="f_estimate_compression_ratio"></a><a class="efeature" href="../src/simple_compression_short.html#f_estimate_compression_ratio">estimate_compression_ratio</a> <span class="esymbol">(</span><span class="elocal">a_sample</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/real_64_short.html">REAL_64</a>
+			<span class="ecomment">--</span><span class="ecomment"> Estimate compression ratio based on a sample of data.</span>
+			<span class="ecomment">--</span><span class="ecomment"> Returns estimated ratio (higher = better compression).</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">sample_not_void</span><span class="esymbol">:</span> <span class="elocal">a_sample</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">sample_not_empty</span><span class="esymbol">:</span> <a class="ekeyword" href="../base/boolean_short.html#f_negated">not</a> <span class="elocal">a_sample</span><span class="edot">.</span><a class="efeature" href="../base/finite_short.html#f_is_empty">is_empty</a>
+	
+<span class="ekeyword">note</span>
+	<span class="eitag">copyright</span><span class="esymbol">:</span> <span class="estring">&quot;Copyright (c) 2024-2025, Larry Rix&quot;</span>
+	<span class="eitag">license</span><span class="esymbol">:</span> <span class="estring">&quot;MIT License&quot;</span>
+
+<span class="ekeyword">end</span> <span class="ecomment">--</span> <span class="ecomment">class </span><a class="eclass" href="../src/simple_compression_short.html">SIMPLE_COMPRESSION</a></pre><form class="nav" onsubmit="go_to('../',this.c.value);return false;">
+<div class="nav">
+<a class="nav hierarchy" href="../class_list.html">Classes</a>
+<a class="nav hierarchy" href="../cluster_list.html">Clusters</a>
+<a class="nav hierarchy" href="../cluster_hierarchy.html">Cluster hierarchy</a>
+<a class="nav class" href="simple_compression_chart.html">Chart</a>
+<a class="nav class" href="simple_compression_links.html">Relations</a>
+<span class="nav class selected">Contracts</span>
+<span class="nav class goto">Go to: <input name="c" value="simple_compression"></span>
+</div></form><pre></pre>
+<p style="text-align:center;">Generated by <a href="http://www.eiffel.com">ISE EiffelStudio</a></p>
+</body>
+</html>
+

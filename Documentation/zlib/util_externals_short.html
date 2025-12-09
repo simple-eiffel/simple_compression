@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="generator" content="ISE EiffelStudio version 25.02.9.8732 - win64">
+<meta name="description" content="Helper functions dependent of external stuff."/>
+<meta name="keywords" content="Eiffel class"/>
+<meta name="keywords" content="Eiffel class"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+<title>util_externals Contracts</title>
+<link rel="stylesheet" href="../default.css" type="text/css">
+<script type="text/javascript" src="../goto.html"></script>
+</head>
+<body>
+<pre></pre><form class="nav" onsubmit="go_to('../',this.c.value);return false;">
+<div class="nav">
+<a class="nav hierarchy" href="../class_list.html">Classes</a>
+<a class="nav hierarchy" href="../cluster_list.html">Clusters</a>
+<a class="nav hierarchy" href="../cluster_hierarchy.html">Cluster hierarchy</a>
+<a class="nav class" href="util_externals_chart.html">Chart</a>
+<a class="nav class" href="util_externals_links.html">Relations</a>
+<span class="nav class selected">Contracts</span>
+<span class="nav class goto">Go to: <input name="c" value="util_externals"></span>
+</div></form><pre><span class="ekeyword">note</span>
+	<span class="eitag">description</span><span class="esymbol">:</span> <span class="estring">&quot;Helper functions dependent of external stuff.&quot;</span>
+	<span class="eitag">date</span><span class="esymbol">:</span> <span class="estring">&quot;$Date$&quot;</span>
+	<span class="eitag">revision</span><span class="esymbol">:</span> <span class="estring">&quot;$Revision$&quot;</span>
+
+<span class="ekeyword">class</span> <span class="ekeyword">interface</span>
+	<a class="eclass" href="../zlib/util_externals_short.html">UTIL_EXTERNALS</a>
+
+<span class="ekeyword">create</span> 
+	<a class="efeature" href="../base/any_short.html#f_default_create">default_create</a>
+
+<span class="ekeyword">feature</span> <span class="ecomment">--</span><span class="ecomment"> Operations</span>
+
+	<a name="f_character_array_from_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_character_array_from_external">character_array_from_external</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/character_8_short.html">CHARACTER_8</a><span class="esymbol">]</span><span class="esymbol">;</span> <span class="elocal">a_memory</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">;</span> <span class="elocal">a_size</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">)</span>
+			<span class="ecomment">--</span><span class="ecomment"> size given array to </span><span class="ecomment">[1..a_size]</span><span class="ecomment"> and fills it with content from 'a_memory'</span>
+			<span class="ecomment">--</span><span class="ecomment"> NOTE: no way to detect if 'a_memory' really references a block of size 'a_size'</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">non_null_memory</span><span class="esymbol">:</span> <span class="elocal">a_memory</span> <span class="esymbol">/=</span> <a class="efeature" href="../base/any_short.html#f_default_pointer">default_pointer</a>
+			<span class="etag">positive_size</span><span class="esymbol">:</span> <span class="elocal">a_size</span> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_character_array_to_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_character_array_to_external">character_array_to_external</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/character_8_short.html">CHARACTER_8</a><span class="esymbol">]</span><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+			<span class="ecomment">--</span><span class="ecomment"> give external routines access to the data of 'a_array'</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">non_empty_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_character_array_to_frozen_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_character_array_to_frozen_external">character_array_to_frozen_external</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/character_8_short.html">CHARACTER_8</a><span class="esymbol">]</span><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+			<span class="ecomment">--</span><span class="ecomment"> give external routines access to the data of 'a_array'</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">non_empty_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_unfreeze_array"></a><a class="efeature" href="../zlib/util_externals_short.html#f_unfreeze_array">unfreeze_array</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/character_8_short.html">CHARACTER_8</a><span class="esymbol">]</span><span class="esymbol">)</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_integer_array_to_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_integer_array_to_external">integer_array_to_external</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">]</span><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+			<span class="ecomment">--</span><span class="ecomment"> give external routines access to the data of 'a_array'</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">non_empty_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_integer_array_to_frozen_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_integer_array_to_frozen_external">integer_array_to_frozen_external</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">]</span><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+			<span class="ecomment">--</span><span class="ecomment"> give external routines access to the data of 'a_array'</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+			<span class="etag">non_empty_array</span><span class="esymbol">:</span> <span class="elocal">a_array</span><span class="edot">.</span><a class="efeature" href="../base/array_short.html#f_count">count</a> <a class="esymbol" href="../base/comparable_short.html#f_is_greater">&gt;</a> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_unfreeze_integer_array"></a><a class="efeature" href="../zlib/util_externals_short.html#f_unfreeze_integer_array">unfreeze_integer_array</a> <span class="esymbol">(</span><span class="elocal">a_array</span><span class="esymbol">:</span> <a class="eclass" href="../base/array_short.html">ARRAY</a> <span class="esymbol">[</span><a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a><span class="esymbol">]</span><span class="esymbol">)</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_string_from_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_string_from_external">string_from_external</a> <span class="esymbol">(</span><span class="elocal">a_cstring</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a>
+			<span class="ecomment">--</span><span class="ecomment"> create a new string from char*</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_null_c_string</span><span class="esymbol">:</span> <span class="elocal">a_cstring</span> <span class="esymbol">/=</span> <a class="efeature" href="../base/any_short.html#f_default_pointer">default_pointer</a>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_string_fill_from_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_string_fill_from_external">string_fill_from_external</a> <span class="esymbol">(</span><span class="elocal">a_cstring</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">;</span> <span class="elocal">a_string</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span>
+			<span class="ecomment">--</span><span class="ecomment"> fill given string from char*</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_null_c_string</span><span class="esymbol">:</span> <span class="elocal">a_cstring</span> <span class="esymbol">/=</span> <a class="efeature" href="../base/any_short.html#f_default_pointer">default_pointer</a>
+			<span class="etag">non_void_string</span><span class="esymbol">:</span> <span class="elocal">a_string</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_string_to_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_string_to_external">string_to_external</a> <span class="esymbol">(</span><span class="elocal">a_string</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+			<span class="ecomment">--</span><span class="ecomment"> make the contents of 'a_string' accessible for external routines</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_string</span><span class="esymbol">:</span> <span class="elocal">a_string</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_freeze"></a><a class="efeature" href="../zlib/util_externals_short.html#f_freeze">freeze</a> <span class="esymbol">(</span><span class="elocal">a_object</span><span class="esymbol">:</span> <a class="eclass" href="../base/any_short.html">ANY</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+		<span class="ekeyword">ensure</span>
+			<span class="etag">is_frozen</span><span class="esymbol">:</span> <a class="efeature" href="../zlib/util_externals_short.html#f_is_frozen">is_frozen</a><span class="esymbol"> </span><span class="esymbol">(</span><span class="ekeyword">Result</span><span class="esymbol">)</span> <span class="esymbol">/=</span> <span class="enumber">0</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_unfreeze"></a><a class="efeature" href="../zlib/util_externals_short.html#f_unfreeze">unfreeze</a> <span class="esymbol">(</span><span class="elocal">a_reference</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">)</span>
+		<span class="ekeyword">require</span>
+			<span class="etag">is_frozen</span><span class="esymbol">:</span> <a class="efeature" href="../zlib/util_externals_short.html#f_is_frozen">is_frozen</a><span class="esymbol"> </span><span class="esymbol">(</span><span class="elocal">a_reference</span><span class="esymbol">)</span> <span class="esymbol">/=</span> <span class="enumber">0</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_is_frozen"></a><a class="efeature" href="../zlib/util_externals_short.html#f_is_frozen">is_frozen</a> <span class="esymbol">(</span><span class="elocal">a_object</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/integer_32_short.html">INTEGER_32</a>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_string_to_frozen_external"></a><a class="efeature" href="../zlib/util_externals_short.html#f_string_to_frozen_external">string_to_frozen_external</a> <span class="esymbol">(</span><span class="elocal">a_string</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+		<span class="ekeyword">require</span>
+			<span class="etag">non_void_string</span><span class="esymbol">:</span> <span class="elocal">a_string</span> <span class="esymbol">/=</span> <span class="ekeyword">Void</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_unfreeze_string"></a><a class="efeature" href="../zlib/util_externals_short.html#f_unfreeze_string">unfreeze_string</a> <span class="esymbol">(</span><span class="elocal">a_string</span><span class="esymbol">:</span> <a class="eclass" href="../base/string_8_short.html">STRING_8</a><span class="esymbol">)</span>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_pointer_to_object"></a><a class="efeature" href="../zlib/util_externals_short.html#f_pointer_to_object">pointer_to_object</a> <span class="esymbol">(</span><span class="elocal">a_ptr</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">)</span><span class="esymbol">:</span> <span class="ekeyword">detachable</span> <a class="eclass" href="../base/any_short.html">ANY</a>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_object_to_pointer"></a><a class="efeature" href="../zlib/util_externals_short.html#f_object_to_pointer">object_to_pointer</a> <span class="esymbol">(</span><span class="elocal">a_obj</span><span class="esymbol">:</span> <a class="eclass" href="../base/any_short.html">ANY</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+
+	<a name="f_eif_access"></a><a class="efeature" href="../zlib/util_externals_short.html#f_eif_access">eif_access</a> <span class="esymbol">(</span><span class="elocal">a_ptr</span><span class="esymbol">:</span> <a class="eclass" href="../base/pointer_short.html">POINTER</a><span class="esymbol">)</span><span class="esymbol">:</span> <a class="eclass" href="../base/any_short.html">ANY</a>
+		<span class="ekeyword">ensure</span>
+			<span class="ekeyword">class</span>
+	
+<span class="ekeyword">end</span> <span class="ecomment">--</span> <span class="ecomment">class </span><a class="eclass" href="../zlib/util_externals_short.html">UTIL_EXTERNALS</a></pre><form class="nav" onsubmit="go_to('../',this.c.value);return false;">
+<div class="nav">
+<a class="nav hierarchy" href="../class_list.html">Classes</a>
+<a class="nav hierarchy" href="../cluster_list.html">Clusters</a>
+<a class="nav hierarchy" href="../cluster_hierarchy.html">Cluster hierarchy</a>
+<a class="nav class" href="util_externals_chart.html">Chart</a>
+<a class="nav class" href="util_externals_links.html">Relations</a>
+<span class="nav class selected">Contracts</span>
+<span class="nav class goto">Go to: <input name="c" value="util_externals"></span>
+</div></form><pre></pre>
+<p style="text-align:center;">Generated by <a href="http://www.eiffel.com">ISE EiffelStudio</a></p>
+</body>
+</html>
+
