@@ -1,0 +1,9 @@
+{
+  "name": "simple_compression",
+  "version": "0.1.0",
+  "description": "Simple Compression Library - Easy zlib/gzip operations",
+  "author": "Larry Rix",
+  "license": "MIT",
+  "category": "utilities",
+  "keywords": ["compression", "zlib", "gzip"]
+}
