@@ -16,15 +16,15 @@ Simple compression wrapper for ISE zlib library with string, byte array, and fil
 
 ## Installation
 
+Set the ecosystem environment variable (one-time setup for all simple_* libraries):
+```
+SIMPLE_EIFFEL=D:\prod
+```
+
 Add to your ECF file:
 
 ```xml
-<library name="simple_compression" location="$SIMPLE_COMPRESSION/simple_compression.ecf"/>
-```
-
-Set the environment variable:
-```
-SIMPLE_COMPRESSION=/path/to/simple_compression
+<library name="simple_compression" location="$SIMPLE_EIFFEL/simple_compression/simple_compression.ecf"/>
 ```
 
 ## Quick Start
