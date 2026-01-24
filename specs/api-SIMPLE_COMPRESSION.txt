@@ -1,0 +1,353 @@
+================================================================================
+SIMPLE_COMPRESSION - Flat Short API Reference (Backwash from Implementation)
+================================================================================
+Generated: 2026-01-23
+Status: Reverse-engineered from implementation
+================================================================================
+
+class SIMPLE_COMPRESSION
+
+inherit
+    ZLIB_CONSTANTS
+
+create
+    make, make_with_level
+
+feature -- Access
+
+    compression_level: INTEGER
+        -- Compression level (0=none, 1=fast, 6=default, 9=best)
+
+    last_error: detachable STRING
+        -- Last error message, if any
+
+    last_input_size: INTEGER
+        -- Size of last input in bytes
+
+    last_output_size: INTEGER
+        -- Size of last output in bytes
+
+feature -- Status Report
+
+    is_valid_level (a_level: INTEGER): BOOLEAN
+        -- Is `a_level' a valid compression level?
+        ensure
+            class
+
+    compression_ratio: REAL_64
+        -- Ratio of last compression (original_size / compressed_size).
+
+feature -- Level Settings
+
+    set_level (a_level: INTEGER)
+        -- Set compression level.
+        require
+            valid_level: is_valid_level (a_level)
+        ensure
+            level_set: compression_level = a_level
+
+    set_level_fast
+        -- Set fastest compression (level 1).
+        ensure
+            level_set: compression_level = Z_best_speed
+
+    set_level_default
+        -- Set default compression (level 6).
+        ensure
+            level_set: compression_level = Z_default_compression
+
+    set_level_best
+        -- Set best compression (level 9).
+        ensure
+            level_set: compression_level = Z_best_compression
+
+feature -- Level Constants
+
+    level_none: INTEGER = 0
+    level_fast: INTEGER = 1
+    level_default: INTEGER = -1
+    level_best: INTEGER = 9
+
+feature -- String Compression
+
+    compress_string (a_input: STRING): STRING
+        -- Compress `a_input' and return compressed data as raw string.
+        require
+            input_not_void: a_input /= Void
+        ensure
+            result_not_void: Result /= Void
+            sizes_tracked: last_input_size = a_input.count
+
+    decompress_string (a_compressed: STRING): STRING
+        -- Decompress `a_compressed' data back to original string.
+        require
+            input_not_void: a_compressed /= Void
+            input_not_empty: not a_compressed.is_empty
+        ensure
+            result_not_void: Result /= Void
+            sizes_tracked: last_input_size = a_compressed.count
+
+    compress_string_base64 (a_input: STRING): STRING
+        -- Compress `a_input' and return as Base64 encoded string.
+        require
+            input_not_void: a_input /= Void
+        ensure
+            result_not_void: Result /= Void
+
+    decompress_string_base64 (a_base64: STRING): STRING
+        -- Decompress Base64 encoded compressed data.
+        require
+            input_not_void: a_base64 /= Void
+            input_not_empty: not a_base64.is_empty
+        ensure
+            result_not_void: Result /= Void
+
+feature -- Convenience String Methods
+
+    compress_fast (a_input: STRING): STRING
+        -- Compress with fastest settings (level 1).
+        require
+            input_not_void: a_input /= Void
+        ensure
+            result_not_void: Result /= Void
+            level_unchanged: compression_level = old compression_level
+
+    compress_best (a_input: STRING): STRING
+        -- Compress with best compression (level 9).
+        require
+            input_not_void: a_input /= Void
+        ensure
+            result_not_void: Result /= Void
+            level_unchanged: compression_level = old compression_level
+
+feature -- Format Detection
+
+    is_zlib_format (a_data: STRING): BOOLEAN
+        -- Does `a_data' appear to be zlib compressed?
+        require
+            data_not_void: a_data /= Void
+
+    is_gzip_format (a_data: STRING): BOOLEAN
+        -- Does `a_data' appear to be gzip compressed?
+        require
+            data_not_void: a_data /= Void
+
+    detect_format (a_data: STRING): STRING
+        -- Detect compression format of `a_data'.
+        require
+            data_not_void: a_data /= Void
+        ensure
+            result_not_void: Result /= Void
+
+feature -- CRC32
+
+    crc32 (a_data: STRING): NATURAL_32
+        -- Calculate CRC32 checksum of `a_data'.
+        require
+            data_not_void: a_data /= Void
+
+feature -- Error Messages
+
+    error_message (a_code: INTEGER): STRING
+        -- Human-readable error message for zlib error code.
+        ensure
+            result_not_void: Result /= Void
+
+feature -- Byte Array Compression
+
+    compress_bytes (a_input: ARRAY [NATURAL_8]): ARRAY [NATURAL_8]
+        -- Compress byte array `a_input'.
+        require
+            input_not_void: a_input /= Void
+            input_not_empty: a_input.count > 0
+        ensure
+            result_not_void: Result /= Void
+            sizes_tracked: last_input_size = a_input.count
+
+    decompress_bytes (a_compressed: ARRAY [NATURAL_8]): ARRAY [NATURAL_8]
+        -- Decompress byte array `a_compressed'.
+        require
+            input_not_void: a_compressed /= Void
+            input_not_empty: a_compressed.count > 0
+        ensure
+            result_not_void: Result /= Void
+            sizes_tracked: last_input_size = a_compressed.count
+
+feature -- File Operations
+
+    compress_file (a_source_path, a_dest_path: STRING): BOOLEAN
+        -- Compress file at `a_source_path' to zlib format at `a_dest_path'.
+        require
+            source_not_empty: not a_source_path.is_empty
+            dest_not_empty: not a_dest_path.is_empty
+
+    decompress_file (a_source_path, a_dest_path: STRING): BOOLEAN
+        -- Decompress file at `a_source_path' to `a_dest_path'.
+        require
+            source_not_empty: not a_source_path.is_empty
+            dest_not_empty: not a_dest_path.is_empty
+
+    read_compressed_file (a_path: STRING): STRING
+        -- Read and decompress file at `a_path'.
+        require
+            path_not_empty: not a_path.is_empty
+        ensure
+            result_not_void: Result /= Void
+
+    write_compressed_file (a_path: STRING; a_content: STRING): BOOLEAN
+        -- Compress `a_content' and write to file at `a_path'.
+        require
+            path_not_empty: not a_path.is_empty
+            content_not_void: a_content /= Void
+
+feature -- Validation
+
+    validate_checksum (a_data: STRING; a_expected_crc: NATURAL_32): BOOLEAN
+        -- Validate that `a_data' has the expected CRC32 checksum.
+        require
+            data_not_void: a_data /= Void
+
+    adler32 (a_data: STRING): NATURAL_32
+        -- Calculate Adler-32 checksum of `a_data'.
+        require
+            data_not_void: a_data /= Void
+
+feature -- Statistics
+
+    last_operation_successful: BOOLEAN
+        -- Was the last operation successful?
+
+    compression_percentage: REAL_64
+        -- Percentage of size reduction in last compression.
+
+    space_savings: STRING
+        -- Human-readable description of compression savings.
+        ensure
+            result_not_void: Result /= Void
+
+feature -- Advanced Options
+
+    compress_with_options (a_input: STRING; a_level: INTEGER; a_window_bits: INTEGER; a_strategy: INTEGER): STRING
+        -- Compress with custom options.
+        require
+            input_not_void: a_input /= Void
+            valid_level: a_level >= 0 and a_level <= 9
+            valid_window: a_window_bits >= 8 and a_window_bits <= 15
+        ensure
+            result_not_void: Result /= Void
+
+    strategy_default: INTEGER
+    strategy_filtered: INTEGER
+    strategy_huffman_only: INTEGER
+    strategy_rle: INTEGER
+
+feature -- Streaming Factory
+
+    create_compress_stream (a_output_path: STRING): SIMPLE_COMPRESSION_STREAM
+        -- Create a compression stream writing to `a_output_path'.
+        require
+            path_not_empty: not a_output_path.is_empty
+        ensure
+            result_not_void: Result /= Void
+            compressing: Result.is_compressing
+
+    create_decompress_stream (a_input_path: STRING): SIMPLE_COMPRESSION_STREAM
+        -- Create a decompression stream reading from `a_input_path'.
+        require
+            path_not_empty: not a_input_path.is_empty
+        ensure
+            result_not_void: Result /= Void
+            decompressing: not Result.is_compressing
+
+feature -- Dictionary Compression
+
+    compress_with_dictionary (a_input: STRING; a_dictionary: STRING): STRING
+        -- Compress `a_input' using `a_dictionary' for better compression.
+        require
+            input_not_void: a_input /= Void
+            dictionary_not_void: a_dictionary /= Void
+        ensure
+            result_not_void: Result /= Void
+
+    estimate_compression_ratio (a_sample: STRING): REAL_64
+        -- Estimate compression ratio based on a sample of data.
+        require
+            sample_not_void: a_sample /= Void
+            sample_not_empty: not a_sample.is_empty
+
+================================================================================
+SIMPLE_COMPRESSION_STREAM
+================================================================================
+
+class SIMPLE_COMPRESSION_STREAM
+
+inherit
+    ZLIB_CONSTANTS
+
+create
+    make_compress, make_decompress
+
+feature -- Access
+
+    is_compressing: BOOLEAN
+    is_open: BOOLEAN
+    total_input: INTEGER
+    total_output: INTEGER
+    compression_level: INTEGER
+    last_error: detachable STRING
+
+feature -- Configuration
+
+    set_level (a_level: INTEGER)
+        require
+            compressing: is_compressing
+            valid_level: a_level = Z_default_compression or else
+                        (a_level >= Z_no_compression and a_level <= Z_best_compression)
+        ensure
+            level_set: compression_level = a_level
+
+feature -- Operations
+
+    write (a_data: STRING)
+        require
+            compressing: is_compressing
+            open: is_open
+            data_not_void: a_data /= Void
+        ensure
+            input_tracked: total_input = old total_input + a_data.count
+
+    write_bytes (a_data: ARRAY [NATURAL_8])
+        require
+            compressing: is_compressing
+            open: is_open
+            data_not_void: a_data /= Void
+        ensure
+            input_tracked: total_input = old total_input + a_data.count
+
+    close
+        require
+            open: is_open
+        ensure
+            closed: not is_open
+
+    read_all: STRING
+        require
+            not_compressing: not is_compressing
+        ensure
+            result_not_void: Result /= Void
+
+    read_chunk (a_size: INTEGER): STRING
+        require
+            not_compressing: not is_compressing
+            positive_size: a_size > 0
+        ensure
+            result_not_void: Result /= Void
+
+feature -- Statistics
+
+    compression_ratio: REAL_64
+
+invariant
+    buffer_not_void: output_buffer /= Void
+
+================================================================================
