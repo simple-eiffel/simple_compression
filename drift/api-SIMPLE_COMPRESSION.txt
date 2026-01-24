@@ -1,0 +1,682 @@
+note
+	description: "Simple compression wrapper for ISE zlib library"
+	author: "Larry Rix"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class interface
+	SIMPLE_COMPRESSION
+
+create 
+	make
+			-- Create compression helper with default level.
+
+	make_with_level (a_level: INTEGER_32)
+			-- Create compression helper with specified level.
+		require
+			valid_level: is_valid_level (a_level)
+		ensure
+			level_set: compression_level = a_level
+
+feature -- Access
+
+	compression_level: INTEGER_32
+			-- Compression level (0=none, 1=fast, 6=default, 9=best)
+
+	generating_type: TYPE [detachable SIMPLE_COMPRESSION]
+			-- Type of current object
+			-- (type of which it is a direct instance)
+			-- (from ANY)
+		ensure -- from ANY
+			generating_type_not_void: Result /= Void
+
+	generator: STRING_8
+			-- Name of current object's generating class
+			-- (base class of the type of which it is a direct instance)
+			-- (from ANY)
+		ensure -- from ANY
+			generator_not_void: Result /= Void
+			generator_not_empty: not Result.is_empty
+
+	last_error: detachable STRING_8
+			-- Last error message, if any
+
+	last_input_size: INTEGER_32
+			-- Size of last input in bytes
+
+	last_output_size: INTEGER_32
+			-- Size of last output in bytes
+	
+feature -- Comparison
+
+	frozen deep_equal (a: detachable ANY; b: like arg #1): BOOLEAN
+			-- Are `a` and `b` either both void
+			-- or attached to isomorphic object structures?
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			shallow_implies_deep: standard_equal (a, b) implies Result
+			both_or_none_void: (a = Void) implies (Result = (b = Void))
+			same_type: (Result and (a /= Void)) implies (b /= Void and then a.same_type (b))
+			symmetric: Result implies deep_equal (b, a)
+
+	frozen equal (a: detachable ANY; b: like arg #1): BOOLEAN
+			-- Are `a` and `b` either both void or attached
+			-- to objects considered equal?
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			definition: Result = (a = Void and b = Void) or else ((a /= Void and b /= Void) and then a.is_equal (b))
+
+	frozen is_deep_equal alias "≡≡≡" (other: SIMPLE_COMPRESSION): BOOLEAN
+			-- Are `Current` and `other` attached to isomorphic object structures?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			shallow_implies_deep: standard_is_equal (other) implies Result
+			same_type: Result implies same_type (other)
+			symmetric: Result implies other.is_deep_equal (Current)
+
+	is_equal (other: SIMPLE_COMPRESSION): BOOLEAN
+			-- Is `other` attached to an object considered
+			-- equal to current object?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			symmetric: Result implies other ~ Current
+			consistent: standard_is_equal (other) implies Result
+
+	frozen standard_equal (a: detachable ANY; b: like arg #1): BOOLEAN
+			-- Are `a` and `b` either both void or attached to
+			-- field-by-field identical objects of the same type?
+			-- Always uses default object comparison criterion.
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			definition: Result = (a = Void and b = Void) or else ((a /= Void and b /= Void) and then a.standard_is_equal (b))
+
+	frozen standard_is_equal alias "≜" (other: SIMPLE_COMPRESSION): BOOLEAN
+			-- Is `other` attached to an object of the same type
+			-- as current object, and field-by-field identical to it?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			same_type: Result implies same_type (other)
+			symmetric: Result implies other.standard_is_equal (Current)
+	
+feature -- Status report
+
+	conforms_to (other: ANY): BOOLEAN
+			-- Does type of current object conform to type
+			-- of `other` (as per Eiffel: The Language, chapter 13)?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+
+	same_type (other: ANY): BOOLEAN
+			-- Is type of current object identical to type of `other`?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			definition: Result = (conforms_to (other) and other.conforms_to (Current))
+	
+feature -- Duplication
+
+	copy (other: SIMPLE_COMPRESSION)
+			-- Update current object using fields of object attached
+			-- to `other`, so as to yield equal objects.
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+			type_identity: same_type (other)
+		ensure -- from ANY
+			is_equal: Current ~ other
+
+	frozen deep_copy (other: SIMPLE_COMPRESSION)
+			-- Effect equivalent to that of:
+			--		`copy` (`other` . `deep_twin`)
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			deep_equal: deep_equal (Current, other)
+
+	frozen deep_twin: SIMPLE_COMPRESSION
+			-- New object structure recursively duplicated from Current.
+			-- (from ANY)
+		ensure -- from ANY
+			deep_twin_not_void: Result /= Void
+			deep_equal: deep_equal (Current, Result)
+
+	frozen standard_copy (other: SIMPLE_COMPRESSION)
+			-- Copy every field of `other` onto corresponding field
+			-- of current object.
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+			type_identity: same_type (other)
+		ensure -- from ANY
+			is_standard_equal: standard_is_equal (other)
+
+	frozen standard_twin: SIMPLE_COMPRESSION
+			-- New object field-by-field identical to `other`.
+			-- Always uses default copying semantics.
+			-- (from ANY)
+		ensure -- from ANY
+			standard_twin_not_void: Result /= Void
+			equal: standard_equal (Result, Current)
+
+	frozen twin: SIMPLE_COMPRESSION
+			-- New object equal to `Current`
+			-- `twin` calls `copy`; to change copying/twinning semantics, redefine `copy`.
+			-- (from ANY)
+		ensure -- from ANY
+			twin_not_void: Result /= Void
+			is_equal: Result ~ Current
+	
+feature -- Basic operations
+
+	frozen default: detachable SIMPLE_COMPRESSION
+			-- Default value of object's type
+			-- (from ANY)
+
+	frozen default_pointer: POINTER
+			-- Default value of type `POINTER`
+			-- (Avoid the need to write `p`.`default` for
+			-- some `p` of type `POINTER`.)
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+
+	default_rescue
+			-- Process exception for routines with no Rescue clause.
+			-- (Default: do nothing.)
+			-- (from ANY)
+
+	frozen do_nothing
+			-- Execute a null action.
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+	
+feature -- Advanced Options
+
+	compress_with_options (a_input: STRING_8; a_level: INTEGER_32; a_window_bits: INTEGER_32; a_strategy: INTEGER_32): STRING_8
+			-- Compress with custom options.
+			-- `a_level`: 0-9 (0=none, 1=fast, 9=best)
+			-- `a_window_bits`: 8-15 (default 15, affects memory usage)
+			-- `a_strategy`: Z_DEFAULT_STRATEGY, Z_FILTERED, Z_HUFFMAN_ONLY, Z_RLE
+		require
+			input_not_void: a_input /= Void
+			valid_level: a_level >= 0 and a_level <= 9
+			valid_window: a_window_bits >= 8 and a_window_bits <= 15
+		ensure
+			result_not_void: Result /= Void
+
+	strategy_default: INTEGER_32
+			-- Default compression strategy (best for most data).
+
+	strategy_filtered: INTEGER_32
+			-- Optimized for data with lots of small values.
+
+	strategy_huffman_only: INTEGER_32
+			-- No string matching, only Huffman encoding.
+			-- Fast but poor compression.
+
+	strategy_rle: INTEGER_32
+			-- Run-length encoding, good for images with long runs.
+	
+feature -- Byte Array Compression
+
+	compress_bytes (a_input: ARRAY [NATURAL_8]): ARRAY [NATURAL_8]
+			-- Compress byte array `a_input`.
+		require
+			input_not_void: a_input /= Void
+			input_not_empty: a_input.count > 0
+		ensure
+			result_not_void: Result /= Void
+			sizes_tracked: last_input_size = a_input.count
+
+	decompress_bytes (a_compressed: ARRAY [NATURAL_8]): ARRAY [NATURAL_8]
+			-- Decompress byte array `a_compressed`.
+		require
+			input_not_void: a_compressed /= Void
+			input_not_empty: a_compressed.count > 0
+		ensure
+			result_not_void: Result /= Void
+			sizes_tracked: last_input_size = a_compressed.count
+	
+feature -- CRC32
+
+	crc32 (a_data: STRING_8): NATURAL_32
+			-- Calculate CRC32 checksum of `a_data`.
+		require
+			data_not_void: a_data /= Void
+	
+feature -- Constants - Compression levels
+--! compression levels */
+
+	Z_best_compression: INTEGER_32 = 9
+			-- (from ZLIB_CONSTANTS)
+
+	Z_best_speed: INTEGER_32 = 1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_default_compression: INTEGER_32 = -1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_no_compression: INTEGER_32 = 0
+			-- (from ZLIB_CONSTANTS)
+	
+feature -- Constants - Compression strategy
+--! compression strategy
+
+	Z_default_strategy: NATURAL_32 = 0
+			-- (from ZLIB_CONSTANTS)
+
+	Z_filtered: NATURAL_32 = 1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_fixed: NATURAL_32 = 4
+			-- (from ZLIB_CONSTANTS)
+
+	Z_huffman_only: NATURAL_32 = 2
+			-- (from ZLIB_CONSTANTS)
+
+	Z_rle: NATURAL_32 = 3
+			-- (from ZLIB_CONSTANTS)
+	
+feature -- Constants - Data type
+--! Possible values of the data_type field
+
+	Z_ascii: NATURAL_32 = 1
+			--! Z_TEXT for compatibility with 1.2.2 and earlier
+			-- (from ZLIB_CONSTANTS)
+
+	Z_binary: NATURAL_32 = 0
+			-- (from ZLIB_CONSTANTS)
+
+	Z_deflated: NATURAL_32 = 8
+			-- The deflate compression method (the only one supported in this version)
+			-- (from ZLIB_CONSTANTS)
+
+	Z_null: NATURAL_32 = 0
+			-- for initializing zalloc, zfree, opaque *
+			-- (from ZLIB_CONSTANTS)
+
+	Z_text: NATURAL_32 = 1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_unknown: NATURAL_32 = 2
+			-- (from ZLIB_CONSTANTS)
+	
+feature -- Constants - Flush Values
+--! Flush values
+--! Allowed flush values; see deflate() and inflate() below for details
+
+	Z_block: NATURAL_32 = 5
+			-- (from ZLIB_CONSTANTS)
+
+	Z_finish: NATURAL_32 = 4
+			-- (from ZLIB_CONSTANTS)
+
+	Z_full_flush: NATURAL_32 = 3
+			-- (from ZLIB_CONSTANTS)
+
+	Z_no_flush: NATURAL_32 = 0
+			-- (from ZLIB_CONSTANTS)
+
+	Z_partial_flush: NATURAL_32 = 1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_sync_flush: NATURAL_32 = 2
+			-- (from ZLIB_CONSTANTS)
+
+	Z_trees: NATURAL_32 = 6
+			-- (from ZLIB_CONSTANTS)
+	
+feature -- Constants - Memory Levels
+
+	Z_mem_default: INTEGER_32 = 8
+			-- memLevel parameter specifies how much memory should be allocated
+			-- for the internal compression state.
+			-- (from ZLIB_CONSTANTS)
+
+	Z_mem_level_1: INTEGER_32 = 1
+			-- memLevel=1 uses minimum memory but is
+			-- slow and reduces compression ratio.
+			-- (from ZLIB_CONSTANTS)
+
+	Z_mem_level_9: INTEGER_32 = 9
+			-- memLevel=9 uses maximum memory for optimal speed.
+			-- (from ZLIB_CONSTANTS)
+	
+feature -- Constants - Return Codes
+--! Return codes for the compression/decompression functions. Negative values
+--! are errors, positive values are used for special but normal events.
+
+	Z_buf_error: INTEGER_32 = -5
+			-- (from ZLIB_CONSTANTS)
+
+	Z_data_error: INTEGER_32 = -3
+			-- (from ZLIB_CONSTANTS)
+
+	Z_errno: INTEGER_32 = -1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_mem_error: INTEGER_32 = -4
+			-- (from ZLIB_CONSTANTS)
+
+	Z_need_dict: INTEGER_32 = 2
+			-- (from ZLIB_CONSTANTS)
+
+	Z_ok: INTEGER_32 = 0
+			-- (from ZLIB_CONSTANTS)
+
+	Z_stream_end: INTEGER_32 = 1
+			-- (from ZLIB_CONSTANTS)
+
+	Z_stream_error: INTEGER_32 = -2
+			-- (from ZLIB_CONSTANTS)
+
+	Z_version_error: INTEGER_32 = -6
+			-- (from ZLIB_CONSTANTS)
+	
+feature -- Convenience String Methods
+
+	compress_best (a_input: STRING_8): STRING_8
+			-- Compress with best compression (level 9).
+		require
+			input_not_void: a_input /= Void
+		ensure
+			result_not_void: Result /= Void
+			level_unchanged: compression_level = old compression_level
+
+	compress_fast (a_input: STRING_8): STRING_8
+			-- Compress with fastest settings (level 1).
+		require
+			input_not_void: a_input /= Void
+		ensure
+			result_not_void: Result /= Void
+			level_unchanged: compression_level = old compression_level
+	
+feature -- Dictionary Compression
+
+	compress_with_dictionary (a_input: STRING_8; a_dictionary: STRING_8): STRING_8
+			-- Compress `a_input` using `a_dictionary` for better compression of similar data.
+			-- Dictionary should contain common strings/patterns from the data.
+		require
+			input_not_void: a_input /= Void
+			dictionary_not_void: a_dictionary /= Void
+		ensure
+			result_not_void: Result /= Void
+
+	estimate_compression_ratio (a_sample: STRING_8): REAL_64
+			-- Estimate compression ratio based on a sample of data.
+			-- Returns estimated ratio (higher = better compression).
+		require
+			sample_not_void: a_sample /= Void
+			sample_not_empty: not a_sample.is_empty
+	
+feature -- Error Messages
+
+	error_message (a_code: INTEGER_32): STRING_8
+			-- Human-readable error message for zlib error code.
+		ensure
+			result_not_void: Result /= Void
+	
+feature -- File Operations
+
+	compress_file (a_source_path, a_dest_path: STRING_8): BOOLEAN
+			-- Compress file at `a_source_path` to gzip format at `a_dest_path`.
+			-- Returns True on success, False on failure (check last_error).
+		require
+			source_not_empty: not a_source_path.is_empty
+			dest_not_empty: not a_dest_path.is_empty
+
+	decompress_file (a_source_path, a_dest_path: STRING_8): BOOLEAN
+			-- Decompress file at `a_source_path` to `a_dest_path`.
+			-- Returns True on success, False on failure (check last_error).
+		require
+			source_not_empty: not a_source_path.is_empty
+			dest_not_empty: not a_dest_path.is_empty
+
+	read_compressed_file (a_path: STRING_8): STRING_8
+			-- Read and decompress file at `a_path`, returning decompressed content.
+			-- Returns empty string on failure (check last_error).
+		require
+			path_not_empty: not a_path.is_empty
+		ensure
+			result_not_void: Result /= Void
+
+	write_compressed_file (a_path: STRING_8; a_content: STRING_8): BOOLEAN
+			-- Compress `a_content` and write to file at `a_path`.
+			-- Returns True on success, False on failure (check last_error).
+		require
+			path_not_empty: not a_path.is_empty
+			content_not_void: a_content /= Void
+	
+feature -- Format Detection
+
+	detect_format (a_data: STRING_8): STRING_8
+			-- Detect compression format of `a_data`.
+			-- Returns "zlib", "gzip", or "unknown".
+		require
+			data_not_void: a_data /= Void
+		ensure
+			result_not_void: Result /= Void
+
+	is_gzip_format (a_data: STRING_8): BOOLEAN
+			-- Does `a_data` appear to be gzip compressed?
+			-- Checks for gzip magic bytes (1F 8B).
+		require
+			data_not_void: a_data /= Void
+
+	is_zlib_format (a_data: STRING_8): BOOLEAN
+			-- Does `a_data` appear to be zlib compressed?
+			-- Checks for zlib magic header bytes (78 xx).
+		require
+			data_not_void: a_data /= Void
+	
+feature -- Level Constants (for convenience)
+
+	Level_best: INTEGER_32 = 9
+			-- Best compression
+
+	Level_default: INTEGER_32 = -1
+			-- Default compression (level 6 internally)
+
+	Level_fast: INTEGER_32 = 1
+			-- Fastest compression
+
+	Level_none: INTEGER_32 = 0
+			-- No compression
+	
+feature -- Level Settings
+
+	set_level (a_level: INTEGER_32)
+			-- Set compression level.
+		require
+			valid_level: is_valid_level (a_level)
+		ensure
+			level_set: compression_level = a_level
+
+	set_level_best
+			-- Set best compression (level 9).
+		ensure
+			level_set: compression_level = Z_best_compression
+
+	set_level_default
+			-- Set default compression (level 6).
+		ensure
+			level_set: compression_level = Z_default_compression
+
+	set_level_fast
+			-- Set fastest compression (level 1).
+		ensure
+			level_set: compression_level = Z_best_speed
+	
+feature -- Output
+
+	Io: STD_FILES
+			-- Handle to standard file setup
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			io_not_void: Result /= Void
+
+	out: STRING_8
+			-- New string containing terse printable representation
+			-- of current object
+			-- (from ANY)
+		ensure -- from ANY
+			out_not_void: Result /= Void
+
+	print (o: detachable ANY)
+			-- Write terse external representation of `o`
+			-- on standard output.
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+
+	frozen tagged_out: STRING_8
+			-- New string containing terse printable representation
+			-- of current object
+			-- (from ANY)
+		ensure -- from ANY
+			tagged_out_not_void: Result /= Void
+	
+feature -- Platform
+
+	Operating_environment: OPERATING_ENVIRONMENT
+			-- Objects available from the operating system
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			operating_environment_not_void: Result /= Void
+	
+feature -- Statistics
+
+	compression_percentage: REAL_64
+			-- Percentage of size reduction in last compression.
+			-- Returns 0 if no compression performed.
+			-- Example: 75.0 means compressed to 25% of original size.
+
+	last_operation_successful: BOOLEAN
+			-- Was the last operation successful?
+
+	space_savings: STRING_8
+			-- Human-readable description of compression savings.
+		ensure
+			result_not_void: Result /= Void
+	
+feature -- Status Report
+
+	compression_ratio: REAL_64
+			-- Ratio of last compression (original_size / compressed_size).
+			-- Returns 0 if no compression performed or output was empty.
+
+	is_valid_flush (a_value: NATURAL_32): BOOLEAN
+			-- Is value `a_value` a valid flush value?
+			-- (from ZLIB_CONSTANTS)
+		ensure -- from ZLIB_CONSTANTS
+			is_instance_free: class
+
+	is_valid_level (a_level: INTEGER_32): BOOLEAN
+			-- Is `a_level` a valid compression level?
+		ensure
+			class
+	
+feature -- Streaming Factory
+
+	create_compress_stream (a_output_path: STRING_8): SIMPLE_COMPRESSION_STREAM
+			-- Create a compression stream writing to `a_output_path`.
+		require
+			path_not_empty: not a_output_path.is_empty
+		ensure
+			result_not_void: Result /= Void
+			compressing: Result.is_compressing
+
+	create_decompress_stream (a_input_path: STRING_8): SIMPLE_COMPRESSION_STREAM
+			-- Create a decompression stream reading from `a_input_path`.
+		require
+			path_not_empty: not a_input_path.is_empty
+		ensure
+			result_not_void: Result /= Void
+			decompressing: not Result.is_compressing
+	
+feature -- String Compression
+
+	compress_string (a_input: STRING_8): STRING_8
+			-- Compress `a_input` and return compressed data as raw string.
+			-- Use `compress_string_base64` for safe text storage.
+		require
+			input_not_void: a_input /= Void
+		ensure
+			result_not_void: Result /= Void
+			sizes_tracked: last_input_size = a_input.count
+
+	compress_string_base64 (a_input: STRING_8): STRING_8
+			-- Compress `a_input` and return as Base64 encoded string.
+			-- Safe for storage in text files, JSON, databases, etc.
+		require
+			input_not_void: a_input /= Void
+		ensure
+			result_not_void: Result /= Void
+
+	decompress_string (a_compressed: STRING_8): STRING_8
+			-- Decompress `a_compressed` data back to original string.
+		require
+			input_not_void: a_compressed /= Void
+			input_not_empty: not a_compressed.is_empty
+		ensure
+			result_not_void: Result /= Void
+			sizes_tracked: last_input_size = a_compressed.count
+
+	decompress_string_base64 (a_base64: STRING_8): STRING_8
+			-- Decompress Base64 encoded compressed data.
+		require
+			input_not_void: a_base64 /= Void
+			input_not_empty: not a_base64.is_empty
+		ensure
+			result_not_void: Result /= Void
+	
+feature -- Validation
+
+	adler32 (a_data: STRING_8): NATURAL_32
+			-- Calculate Adler-32 checksum of `a_data`.
+			-- Used by zlib format (different from CRC32 used by gzip).
+		require
+			data_not_void: a_data /= Void
+
+	validate_checksum (a_data: STRING_8; a_expected_crc: NATURAL_32): BOOLEAN
+			-- Validate that `a_data` has the expected CRC32 checksum.
+		require
+			data_not_void: a_data /= Void
+	
+feature -- Window Bits
+
+	Z_default_window_bits: INTEGER_32 = 15
+			-- default value, use with deflateInit.
+			-- (from ZLIB_CONSTANTS)
+
+	Z_windows_bits: INTEGER_INTERVAL
+			-- windowBits determine the windows size
+			-- 8..15, default value 8.
+			-- (from ZLIB_CONSTANTS)
+	
+invariant
+		-- from ANY
+	reflexive_equality: standard_is_equal (Current)
+	reflexive_conformance: conforms_to (Current)
+
+note
+	copyright: "Copyright (c) 2024-2025, Larry Rix"
+	license: "MIT License"
+
+end -- class SIMPLE_COMPRESSION
+
