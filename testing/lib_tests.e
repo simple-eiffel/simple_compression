@@ -297,6 +297,93 @@ feature -- Tests
 			assert_true ("known adler vector", a1 = 0x11E60398)
 		end
 
+	test_crc32_known_vectors
+			-- Standard CRC-32/ISO-HDLC published check values.
+		local
+			comp: SIMPLE_COMPRESSION
+		do
+			create comp.make
+			assert_true ("empty -> 0", comp.crc32 ("") = 0)
+			assert_true ("'a' -> E8B7BE43", comp.crc32 ("a") = 0xE8B7BE43)
+			assert_true ("check '123456789' -> CBF43926", comp.crc32 ("123456789") = 0xCBF43926)
+			assert_true ("fox -> 414FA339",
+				comp.crc32 ("The quick brown fox jumps over the lazy dog") = 0x414FA339)
+		end
+
+	test_adler32_known_vectors
+			-- Standard Adler-32 published check values.
+		local
+			comp: SIMPLE_COMPRESSION
+		do
+			create comp.make
+			assert_true ("empty -> 1", comp.adler32 ("") = 1)
+			assert_true ("'a' -> 00620062", comp.adler32 ("a") = 0x00620062)
+			assert_true ("Wikipedia -> 11E60398", comp.adler32 ("Wikipedia") = 0x11E60398)
+		end
+
+	test_checksums_match_reference
+			-- Adversarial: the zlib-backed crc32/adler32 must equal the
+			-- independent pure-Eiffel reference for every input, across all byte
+			-- values, every length 0..512, and binary data with embedded nulls.
+		local
+			comp: SIMPLE_COMPRESSION
+			l_data: STRING
+			i, k: INTEGER
+			l_all_bytes: STRING
+		do
+			create comp.make
+
+				-- Every length 0..512 of a deterministic pseudo-byte pattern.
+			from i := 0 until i > 512 loop
+				create l_data.make (i)
+				from k := 0 until k >= i loop
+					l_data.append_code (((k * 31 + 7) \\ 256).to_natural_32)
+					k := k + 1
+				end
+				assert_true ("crc matches ref len=" + i.out, comp.crc32 (l_data) = comp.crc32_native (l_data))
+				assert_true ("adler matches ref len=" + i.out, comp.adler32 (l_data) = comp.adler32_native (l_data))
+				i := i + 1
+			end
+
+				-- All 256 byte values in sequence, including null at index 0.
+			create l_all_bytes.make (256)
+			from k := 0 until k >= 256 loop
+				l_all_bytes.append_code (k.to_natural_32)
+				k := k + 1
+			end
+			assert_true ("crc all-bytes matches ref", comp.crc32 (l_all_bytes) = comp.crc32_native (l_all_bytes))
+			assert_true ("adler all-bytes matches ref", comp.adler32 (l_all_bytes) = comp.adler32_native (l_all_bytes))
+
+				-- Embedded nulls mid-stream: length-based, not null-terminated.
+			create l_data.make (7)
+			l_data.append ("ab")
+			l_data.append_code (0)
+			l_data.append ("cd")
+			l_data.append_code (0)
+			l_data.append_code (0)
+			assert_true ("embedded-null length honored (count=7)", l_data.count = 7)
+			assert_true ("crc embedded-null matches ref", comp.crc32 (l_data) = comp.crc32_native (l_data))
+			assert_true ("adler embedded-null matches ref", comp.adler32 (l_data) = comp.adler32_native (l_data))
+		end
+
+	test_checksums_large_matches_reference
+			-- Adversarial scale: 1 MB block, zlib backing must equal the
+			-- reference implementation exactly.
+		local
+			comp: SIMPLE_COMPRESSION
+			l_data: STRING
+			k: INTEGER
+		do
+			create comp.make
+			create l_data.make (1_000_000)
+			from k := 0 until k >= 1_000_000 loop
+				l_data.append_code (((k * 131 + 17) \\ 256).to_natural_32)
+				k := k + 1
+			end
+			assert_true ("crc 1MB matches ref", comp.crc32 (l_data) = comp.crc32_native (l_data))
+			assert_true ("adler 1MB matches ref", comp.adler32 (l_data) = comp.adler32_native (l_data))
+		end
+
 	test_statistics
 			-- Test compression statistics.
 		local

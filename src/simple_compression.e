@@ -1,5 +1,14 @@
 note
-	description: "Simple compression wrapper for ISE zlib library"
+	description: "[
+		Simple compression wrapper for the ISE zlib library.
+
+		Checksums crc32 (CRC-32/ISO-HDLC: gzip, PNG, Ethernet) and adler32 are
+		computed by zlib's native C functions, bound cross-platform through the
+		ISE zlib dependency (bundled zlib on Windows, system libz elsewhere).
+		Independent pure-Eiffel reference implementations (crc32_native,
+		adler32_native) are retained as portable fallbacks and as the oracle the
+		zlib results are contract-checked against on every call in a contracted build.
+	]"
 	author: "Larry Rix"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -279,17 +288,55 @@ feature -- Format Detection
 			result_not_void: Result /= Void
 		end
 
-feature -- CRC32
+feature -- Checksums (zlib-backed)
 
 	crc32 (a_data: STRING): NATURAL_32
-			-- Calculate CRC32 checksum of `a_data'.
+			-- CRC-32/ISO-HDLC checksum of `a_data' -- the gzip / PNG / Ethernet
+			-- variant -- computed by zlib's native crc32().
+			-- Cross-platform: binds through the ISE zlib library, so it links the
+			-- bundled zlib on Windows and system libz elsewhere.
+		require
+			data_not_void: a_data /= Void
+		do
+			if a_data.is_empty then
+				Result := 0
+			else
+				Result := c_crc32 (0, a_data.area.base_address, a_data.count)
+			end
+		ensure
+			empty_is_zero: a_data.is_empty implies Result = 0
+			agrees_with_reference: Result = crc32_native (a_data)
+		end
+
+	adler32 (a_data: STRING): NATURAL_32
+			-- Adler-32 checksum of `a_data' -- the check value used by the zlib
+			-- stream format -- computed by zlib's native adler32().
+			-- Cross-platform: binds through the ISE zlib library.
+		require
+			data_not_void: a_data /= Void
+		do
+			if a_data.is_empty then
+				Result := 1
+			else
+				Result := c_adler32 (1, a_data.area.base_address, a_data.count)
+			end
+		ensure
+			empty_is_one: a_data.is_empty implies Result = 1
+			agrees_with_reference: Result = adler32_native (a_data)
+		end
+
+feature -- Checksums (pure-Eiffel reference)
+
+	crc32_native (a_data: STRING): NATURAL_32
+			-- Pure-Eiffel CRC-32/ISO-HDLC implementation (table-based, polynomial
+			-- 0xEDB88320). Portable fallback and the oracle that `crc32' is
+			-- contract-checked against on every call in a contracted build.
 		require
 			data_not_void: a_data /= Void
 		local
 			l_crc: NATURAL_32
 			i: INTEGER
 		do
-			-- Simple CRC32 implementation using lookup table
 			l_crc := 0xFFFFFFFF
 			from i := 1 until i > a_data.count loop
 				l_crc := crc32_table.item (((l_crc.bit_xor (a_data.item (i).natural_32_code)) & 0xFF).to_integer_32).bit_xor (l_crc |>> 8)
@@ -298,7 +345,44 @@ feature -- CRC32
 			Result := l_crc.bit_xor (0xFFFFFFFF)
 		end
 
-feature {NONE} -- CRC32 Implementation
+	adler32_native (a_data: STRING): NATURAL_32
+			-- Pure-Eiffel Adler-32 implementation (modulo 65521). Portable
+			-- fallback and the oracle that `adler32' is checked against.
+		require
+			data_not_void: a_data /= Void
+		local
+			a, b: NATURAL_32
+			i: INTEGER
+		do
+			a := 1
+			b := 0
+			from i := 1 until i > a_data.count loop
+				a := (a + a_data.item (i).natural_32_code) \\ 65521
+				b := (b + a) \\ 65521
+				i := i + 1
+			end
+			Result := (b |<< 16) | a
+		end
+
+feature {NONE} -- zlib C externals
+
+	c_crc32 (a_crc: NATURAL_32; a_buf: POINTER; a_len: INTEGER): NATURAL_32
+			-- zlib crc32(a_crc, a_buf, a_len); a_crc seeded with 0 for a one-shot.
+		external
+			"C inline use <zlib.h>"
+		alias
+			"return (EIF_NATURAL_32) crc32 ((uLong) $a_crc, (const Bytef *) $a_buf, (uInt) $a_len);"
+		end
+
+	c_adler32 (a_adler: NATURAL_32; a_buf: POINTER; a_len: INTEGER): NATURAL_32
+			-- zlib adler32(a_adler, a_buf, a_len); a_adler seeded with 1 for a one-shot.
+		external
+			"C inline use <zlib.h>"
+		alias
+			"return (EIF_NATURAL_32) adler32 ((uLong) $a_adler, (const Bytef *) $a_buf, (uInt) $a_len);"
+		end
+
+feature {NONE} -- CRC32 reference table
 
 	crc32_table: ARRAY [NATURAL_32]
 			-- CRC32 lookup table (IEEE polynomial).
@@ -562,25 +646,6 @@ feature -- Validation
 			data_not_void: a_data /= Void
 		do
 			Result := crc32 (a_data) = a_expected_crc
-		end
-
-	adler32 (a_data: STRING): NATURAL_32
-			-- Calculate Adler-32 checksum of `a_data'.
-			-- Used by zlib format (different from CRC32 used by gzip).
-		require
-			data_not_void: a_data /= Void
-		local
-			a, b: NATURAL_32
-			i: INTEGER
-		do
-			a := 1
-			b := 0
-			from i := 1 until i > a_data.count loop
-				a := (a + a_data.item (i).natural_32_code) \\ 65521
-				b := (b + a) \\ 65521
-				i := i + 1
-			end
-			Result := (b |<< 16) | a
 		end
 
 feature -- Statistics

@@ -1,0 +1,33 @@
+# Phase 6 Hardening Evidence
+# Project: D:/prod/simple_compression
+# Date: 2026-07-18
+# Scope: zlib-backed crc32/adler32 binding
+
+## Adversarial Testing
+Adversarial tests added: 4
+  - test_crc32_known_vectors (empty=0, 'a'=0xE8B7BE43, '123456789'=0xCBF43926, fox=0x414FA339)
+  - test_adler32_known_vectors (empty=1, 'a'=0x00620062, 'Wikipedia'=0x11E60398)
+  - test_checksums_match_reference (zlib == pure-Eiffel reference across all lengths 0-512,
+      all 256 byte values, embedded nulls) -- ~770 differential comparisons
+  - test_checksums_large_matches_reference (1 MB block, zlib == reference)
+
+## Differential-verification contract (DbC oracle)
+crc32/adler32 carry postcondition agrees_with_reference: Result = *_native(a_data)
+=> every call in a contracted build cross-verifies zlib against the independent
+   pure-Eiffel implementation. Active in this finalized -keep test binary.
+
+## Test run (F_code finalized -keep)
+Results: 21 passed, 0 failed
+ALL TESTS PASSED
+
+## SCOOP Consumer Integration
+Consumer test created: yes (test_consumer/, concurrency=scoop, void_safety=all)
+Consumer compilation: PASS (zero warnings)
+VUAR(2) errors: 0
+Consumer run: "CONSUMER OK: crc32+adler32 via zlib match known vectors"
+
+## Compilation
+Zero warnings. Inline-C externals bind zlib crc32()/adler32() via <zlib.h>,
+cross-platform through the ISE zlib dependency (Windows tested; Linux portable by construction).
+
+# Status: PASS
