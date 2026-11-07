@@ -16,6 +16,12 @@
 			<concurrency support="scoop" use="thread"/>
 			<void_safety support="all"/>
 		</capability>
+		<!-- ISE's zlib wrapper assigns Z_NULL through an int cast, which newer clang and gcc refuse. -->
+		<external_cflag value="-Wno-int-conversion">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_cflag>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="simple_base64" location="$SIMPLE_EIFFEL\simple_base64\simple_base64.ecf"/>
 		<library name="zlib" location="$ISE_LIBRARY\unstable\library\compression\zlib\zlib.ecf"/>
